@@ -17,8 +17,13 @@ pygame.display.set_caption('Flappy Bird')
 bg = pygame.image.load('assets/bg.png')
 ground_img = pygame.image.load('assets/ground.png')
 
+#define font
+font = pygame.font.SysFont('Bauhaus 93', 60)
 
-#define game variables
+# Define color
+white = (255, 255, 255)
+
+# define game variables
 ground_scroll = 0
 scroll_speed = 4
 flying = False
@@ -26,6 +31,13 @@ game_over = False
 pipe_gap = 150
 pipe_frequency = 1500 #milliseconds
 last_pipe = pygame.time.get_ticks() - pipe_frequency
+score = 0
+pass_pipe = False
+
+def draw_text(text, font,text_col, x, y):
+    img = font.render(text, True, text_col)
+    screen.blit(img, (x,y))
+
 
 class Bird(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -120,6 +132,18 @@ while run:
     
     #draw the ground
     screen.blit(ground_img, (ground_scroll,768))
+    
+    #Check the score
+    if len(pipe_group) > 0:
+        if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left and bird_group.sprites()[0].rect.right < pipe_group.sprites()[0].rect.right and pass_pipe == False:
+            pass_pipe = True
+        if pass_pipe == True:
+            if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.right:
+                score += 1
+                pass_pipe = False
+    
+    draw_text(str(score), font, white, int(screen_width/2), 20)
+    
     
     #Check if the bird has hit the ground
     if flappy.rect.bottom >= 768:
